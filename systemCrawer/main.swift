@@ -7,23 +7,45 @@
 
 import Foundation
 
-var temp = [String]();
+var directories = 0;
+var files = 0;
+var tempString = ""
+
 func getFileNames(_ path: String) {
     let fileManager = FileManager.default
-    
-    // get file names inside the directory
     let fileNames = try? fileManager.contentsOfDirectory(atPath: path)
     
-    // base case: if there are no items in the contentsOfDirectory
-    if !fileManager.fileExists(atPath: fileNames?[0] ?? "") {
-        print(temp)
+    if !fileManager.fileExists(atPath: path) {
+        print(tempString)
+        print("│")
+        tempString = ""
+        return
+        
     } else {
         if let fileNames = fileNames {
-            temp.append(fileNames[0])
-            getFileNames(fileNames[1])
+            directories += 1
+            files = files + fileNames.count
+            for i in 0..<fileNames.count {
+                if i == 0 { tempString = tempString + "├─"}
+                if i != 0 {
+                    tempString = tempString + "\n└─"
+                }
+            tempString = tempString + "\(fileNames[i])\n"
+            getFileNames(FileManager.default.currentDirectoryPath + "/\(fileNames[i])")
+        }
         }
     }
 }
 
+print("current directory path contents:")
+print(FileManager.default.currentDirectoryPath)
+let fileNames = try? FileManager.default.contentsOfDirectory(atPath: FileManager.default.currentDirectoryPath)
+if let fileNames = fileNames {
+    print(fileNames)
+}
+
 getFileNames(FileManager.default.currentDirectoryPath)
+print("directories: \(directories), files: \(files)")
+
+
 
